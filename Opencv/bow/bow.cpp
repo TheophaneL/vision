@@ -1,3 +1,8 @@
+/*
+ * Creation d'un Bag-Of-Word a partir d'une collection d'images
+ *
+ */
+
 #include <stdio.h>
 #include <vector>
 #include <opencv2/opencv.hpp>

@@ -1,3 +1,12 @@
+/*
+ * DONE : Extraire les keypoints et descripteurs
+ * DONE : Effectuer le matching entre deux images
+ * ----------------------------------------------
+ * TODO : Effectuer le matching avec les cascades
+ *
+ *
+ */
+
 #include <stdio.h>
 #include <iostream>
 #include <vector>
@@ -10,71 +19,107 @@ using namespace cv;
 
 int main(int argc, char** argv)
 {
-  if(argc < 3){
+
+  if(argc < 2){
       std::cout << "Usage : " << argv[0] << " <image-1> <image-2>" << std::endl;
     }
   else{
       Mat img1 = imread(argv[1], CV_LOAD_IMAGE_GRAYSCALE);
       Mat img2 = imread(argv[2], CV_LOAD_IMAGE_GRAYSCALE);
-    }
-  Mat homography;
+
+      if(!img1.data && !img2.data) return -1;
+      //if(!img1.data) return -1;
 
 
+      std::vector<KeyPoint> keypoint1;
+      std::vector<KeyPoint> keypoint2;
+      Mat output1;
+      Mat output2;
+      Mat descripteur1;
+      Mat descripteur2;
+
+      // SIFT detecteur
+      Ptr<Feature2D> detector = xfeatures2d::SiftFeatureDetector::create();
+
+      // Detect Kp Image 1
+      detector->detect(img1,keypoint1);
+      drawKeypoints(img1, keypoint1, output1);
+
+      //imshow("Keypoint Sift Image 1",output1);
+
+      // Detect Kp Image 2
+      detector->detect(img2,keypoint2);
+      drawKeypoints(img2, keypoint2,output2);
+
+      //imshow("Keypoint Sift Image 2",output2);
+
+      // SIFT extracteur
+      Ptr<Feature2D> extractor = xfeatures2d::SiftDescriptorExtractor::create();
+
+      extractor->compute(img1,keypoint1,descripteur1);
+      extractor->compute(img2,keypoint2,descripteur2);
+
+      // FLANN matcheur
+      std::vector<DMatch>matches;
+      Ptr<FlannBasedMatcher> matcheur(new FlannBasedMatcher);
+      matcheur->match(descripteur1,descripteur2,matches);
+
+      // Reduce matche by distance
+      std::vector<DMatch> goodMatches;
 
 
-  return 0;
-}
+      double min_dist = 10000;
+      double max_dist = 0;
 
 /*
-int main(int argc, char** argv )
-{
+      for(std::vector<DMatch>::iterator it = matches.begin(); it != matches.end(); ++it)
+        {
+          DMatch matche;
+          if( matche = *it)
+            {
+              double dist = matche.distance;
+              if(dist < min_dist) min_dist = dist;
+              if(dist > max_dist) max_dist = dist;
+            }
+        }
 
-  Mat dictionary;
-      FileStorage fs("dictionary.yml", FileStorage::READ);
-      fs["vocabulary"] >> dictionary;
-      fs.release();
-
-      //create a nearest neighbor matcher
-      Ptr<DescriptorMatcher> matcher(new FlannBasedMatcher);
-      //create Sift feature point extracter
-      Ptr<FeatureDetector> detector = xfeatures2d::SiftFeatureDetector::create();
-      //create Sift descriptor extractor
-      Ptr<DescriptorExtractor> extractor = xfeatures2d::SiftDescriptorExtractor::create();
-      //create BoF (or BoW) descriptor extractor
-      BOWImgDescriptorExtractor bowDE(extractor,matcher);
-      //Set the dictionary with the vocabulary we created in the first step
-      bowDE.setVocabulary(dictionary);
-
-      //To store the image file name
-      char * filename = new char[100];
-      //To store the image tag name - only for save the descriptor in a file
-      char * imageTag = new char[10];
-
-      //open the file to write the resultant descriptor
-      FileStorage fs1("descriptor.yml", FileStorage::WRITE);
-
-      //the image file with the location. change it according to your image file location
-      sprintf(filename,"images/1.jpg");
-      //read the image
-      Mat img=imread(filename,CV_LOAD_IMAGE_GRAYSCALE);
-      //To store the keypoints that will be extracted by SIFT
-      std::vector<KeyPoint> keypoints;
-      //Detect SIFT keypoints (or feature points)
-      detector->detect(img,keypoints);
-      //To store the BoW (or BoF) representation of the image
-      Mat bowDescriptor;
-      //extract BoW (or BoF) descriptor from given image
-      bowDE.compute(img,keypoints,bowDescriptor);
-
-      //prepare the yml (some what similar to xml) file
-      sprintf(imageTag,"img1");
-      //write the new BoF descriptor to the file
-      std::cout << "Tage de l'image : "<< imageTag  << std::endl;
-      fs1 << imageTag << bowDescriptor;
-
-      //You may use this descriptor for classifying the image.
-
-      //release the file storage
-      fs1.release();
-}
+      std::cout <<" Distances de matche - Max : " << max_dist << " Min : "<< min_dist << std::endl;
+      for(std::vector<DMatch>::iterator it = matches.begin(); it != matches.end(); ++it)
+        {
+          DMatch matche;
+          if( matche = *it)
+            {
+              if(matche.distance < 2*min_dist) goodMatches.push_back(matche);
+            }
+        }
 */
+
+      for(int i=0; i<matches.size();++i)
+        {
+          DMatch matche = matches[i];
+
+              double dist = matche.distance;
+              if(dist < min_dist) min_dist = dist;
+              if(dist > max_dist) max_dist = dist;
+
+        }
+
+      std::cout <<" Distances de matche - Max : " << max_dist << " Min : "<< min_dist << std::endl;
+      for(int i=0; i<matches.size();++i)
+        {
+          DMatch matche = matches[i];
+
+              if(matche.distance < 2*min_dist) goodMatches.push_back(matche);
+
+        }
+
+      Mat img_matches;
+      drawMatches(img1,keypoint1,img2,keypoint2,goodMatches,img_matches);
+      imshow("MATCHING SIFT + FLANN WITH DISTANCE FILTERING ( MATCH < 2 x MIN_DISTANCE )", img_matches);
+
+      waitKey(0);
+
+      return 0;
+    }
+
+}

@@ -1,3 +1,9 @@
+/*
+ *
+ * Utilisation d'une Bag-Of-Words pour générer la description d'une image
+ *
+ */
+
 #include <stdio.h>
 #include <vector>
 #include <opencv2/opencv.hpp>
