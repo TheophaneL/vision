@@ -39,7 +39,8 @@ int main(int argc, char** argv)
       Mat descripteur2;
 
       // SIFT detecteur
-      Ptr<Feature2D> detector = xfeatures2d::SiftFeatureDetector::create();
+      Ptr<Feature2D> detector = xfeatures2d::SiftFeatureDetector::create(200);
+
 
       // Detect Kp Image 1
       detector->detect(img1,keypoint1);
@@ -63,6 +64,10 @@ int main(int argc, char** argv)
       std::vector<DMatch>matches;
       Ptr<FlannBasedMatcher> matcheur(new FlannBasedMatcher);
       matcheur->match(descripteur1,descripteur2,matches);
+
+      // BRUTE FORCE matcheur
+      //Ptr<BFMatcher> matcheurBF(new BFMatcher(NORM_L1,true));
+      //matcheurBF->match(descripteur1,descripteur2,matches);
 
       // Reduce matche by distance
       std::vector<DMatch> goodMatches;
@@ -109,13 +114,13 @@ int main(int argc, char** argv)
         {
           DMatch matche = matches[i];
 
-              if(matche.distance < 2*min_dist) goodMatches.push_back(matche);
+              if(matche.distance < 2.5*min_dist) goodMatches.push_back(matche);
 
         }
 
       Mat img_matches;
       drawMatches(img1,keypoint1,img2,keypoint2,goodMatches,img_matches);
-      imshow("MATCHING SIFT + FLANN WITH DISTANCE FILTERING ( MATCH < 2 x MIN_DISTANCE )", img_matches);
+      imshow("MATCHING SIFT + FLANN WITH DISTANCE FILTERING ( MATCH < 2 x MIN_DISTANCE ) / 200 FEATURES", img_matches);
 
       waitKey(0);
 
