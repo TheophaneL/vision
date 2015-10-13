@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<conf>
+  <ecm>
+    <mask>
+      <size>9</size>
+      <nb_mask>180</nb_mask>
+    </mask>
+    <range>
+      <tracking>10</tracking>
+    </range>
+    <contrast>
+      <edge_threshold>20000</edge_threshold>
+      <mu1>0.5</mu1>
+      <mu2>0.5</mu2>
+    </contrast>
+  </ecm>
+  <sample>
+    <step>5</step>
+    <nb_sample>500</nb_sample>
+  </sample>
+  <camera>
+    <image_width>640</image_width>
+    <image_height>360</image_height>
+    <px>490.1378948913</px>
+    <py>488.8045893604</py>
+    <u0>335.8276036840</u0>
+    <v0>190.7887359369</v0>
+    <kud>0.0089831595</kud>
+    <kdu>-0.0108738580</kdu>
+  </camera>
+</conf>
+

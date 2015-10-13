@@ -2,6 +2,10 @@
 visp/Dev-Visp/CMakeFiles
 visp/Dev-Visp/CMakeCache*
 visp/Dev-Visp/cmake_*
-visp/build-Visp_Project
+visp/build-Visp_Project/CMakeFiles
+visp/build-Visp_Project/CMakeCa*
+visp/build-Visp_Project/cmake_*
+visp/build-Visp_Project/Visp_Project*
+visp/build-Visp_Project/Makefile
 opencv/bow/_build
 *.user
