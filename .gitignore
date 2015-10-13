@@ -1,0 +1,7 @@
+*~
+visp/Dev-Visp/CMakeFiles
+visp/Dev-Visp/CMakeCache*
+visp/Dev-Visp/cmake_*
+visp/build-Visp_Project
+opencv/bow/_build
+*.user
