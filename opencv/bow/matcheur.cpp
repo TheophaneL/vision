@@ -114,11 +114,13 @@ int main(int argc, char** argv)
         {
           DMatch matche = matches[i];
 
-              if(matche.distance < 2.5*min_dist) goodMatches.push_back(matche);
+              if(matche.distance < 2.5*(min_dist+1)) goodMatches.push_back(matche);
 
         }
 
       Mat img_matches;
+      std::cout <<"Good matchs : "<< goodMatches.size() << std::endl;
+
       drawMatches(img1,keypoint1,img2,keypoint2,goodMatches,img_matches);
       imshow("MATCHING SIFT + FLANN WITH DISTANCE FILTERING ( MATCH < 2 x MIN_DISTANCE ) / 200 FEATURES", img_matches);
 
